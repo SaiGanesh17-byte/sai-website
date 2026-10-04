@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>User Guide — sAI</title>
+<meta name="description" content="How to install, activate and use sAI, the multi-agent AI coding assistant for your terminal.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="bar">
+  <div class="bar-in">
+    <a class="brand" href="index.html">sAI</a>
+    <nav><a href="index.html#features">Features</a><a href="guide.html">Guide</a><a href="index.html#faq">FAQ</a>
+      <a class="pill" href="index.html#access">Request access</a></nav>
+  </div>
+</header>
+
+<main class="doc">
+  <header class="doc-head">
+    <p class="kicker">User Guide · sAI <span class="ver">0.1.0</span> for macOS</p>
+    <h1>Everything you need to use sAI.</h1>
+    <p class="sub">From installing to getting great results — and what to do when something goes wrong.</p>
+    <nav class="toc">
+      <a href="#start">Before you start</a><a href="#install">Install</a><a href="#first">First session</a>
+      <a href="#talk">Talking to sAI</a><a href="#agents">Agents</a><a href="#safety">Approvals &amp; safety</a>
+      <a href="#commands">Commands</a><a href="#models">Models &amp; cost</a><a href="#keys">API keys</a>
+      <a href="#sessions">Sessions</a><a href="#custom">Your own commands</a><a href="#scripts">Scripts</a>
+      <a href="#tips">Tips</a><a href="#trouble">Troubleshooting</a>
+    </nav>
+  </header>
+
+  <section id="start">
+    <h2>Before you start</h2>
+    <ul>
+      <li><b>A Mac</b> — sAI <span class="ver">0.1.0</span> supports macOS. Windows and Linux are not supported yet.</li>
+      <li><b>Python 3.14</b> — check with <code class="inline">python3 --version</code>. Get it from <a href="https://www.python.org/downloads/">python.org</a> if needed.</li>
+      <li><b>A license</b> — free during the preview. <a href="index.html#access">Request access</a>; each license works on one computer.</li>
+      <li><b>An OpenRouter API key</b> — required. Create one at <a href="https://openrouter.ai/keys">openrouter.ai/keys</a>.
+        Optional free-tier keys add capacity: <a href="https://console.groq.com/keys">Groq</a>,
+        <a href="https://aistudio.google.com/apikey">Google Gemini</a>, <a href="https://build.nvidia.com">NVIDIA</a>.</li>
+    </ul>
+  </section>
+
+  <section id="install">
+    <h2>Install and activate</h2>
+    <ol>
+      <li>Download the package from the <a href="index.html#how">home page</a> and install it:
+        <code>python3 -m pip install sai-0.1.0-py3-none-any.whl</code>
+        Tip: install it in its own environment first with <code class="inline">python3 -m venv ~/.sai-env &amp;&amp; source ~/.sai-env/bin/activate</code>.</li>
+      <li>Get your laptop code and send it with the <a href="index.html#access">access form</a>:
+        <code>python3 -m sai_guard machine-id</code></li>
+      <li>When your approval email arrives, run this and paste the email (all of it is fine):
+        <code>python3 -m sai_guard activate</code>
+        You'll see <b>✓ License installed</b>.</li>
+      <li>Check it works: <code class="inline">sai --version</code></li>
+    </ol>
+  </section>
+
+  <section id="first">
+    <h2>Your first session</h2>
+    <ol>
+      <li>Open Terminal and go to a project folder: <code class="inline">cd ~/my-project</code></li>
+      <li>Run <code class="inline">sai</code>. The very first time, it asks for your API keys — paste them when asked (input is hidden).</li>
+      <li>The first time in a folder, sAI asks whether you <b>trust</b> it. That folder becomes the workspace: agents can read
+        everything in it, and change files or run commands only with your approval. They can't reach outside it.</li>
+      <li>Type what you want in plain English and press Enter:</li>
+    </ol>
+<pre class="sample"><span class="p">❯</span> why does the login test fail?
+  <span class="d">⎿  jev → Debugger</span>
+<span class="t">⏺</span> Bash(python3 -m pytest tests/test_login.py -q)   <span class="d">⎿  1 failed</span>
+<span class="t">⏺</span> Read(app/auth.py)                              <span class="d">⎿  Read 84 lines</span>
+<span class="t">⏺</span> Debugger
+  The test expects a 401 but login() returns 403 for a wrong password…
+  <span class="d">models: Jev → gpt-oss-20b (groq, free) · Debugger → nemotron-3-super (free) ×3</span></pre>
+    <p>Each <b>⏺</b> line is a step: a tool the agent used, then its result. The last line under every answer shows which
+      AI models produced it, and whether they were free.</p>
+  </section>
+
+  <section id="talk">
+    <h2>Talking to sAI</h2>
+    <table>
+      <tr><th>Type</th><th>What it does</th></tr>
+      <tr><td>plain text</td><td>A request or question. sAI answers directly or hands it to the right agent.</td></tr>
+      <tr><td><code class="inline">@path/to/file</code></td><td>Attach a file (or a folder listing) to your request.</td></tr>
+      <tr><td><code class="inline">@screenshot.png</code></td><td>Attach an image — png, jpg, gif or webp, up to 4 per request.</td></tr>
+      <tr><td><code class="inline">!command</code></td><td>Run a shell command yourself, e.g. <code class="inline">!git status</code>.</td></tr>
+      <tr><td><code class="inline">/command</code></td><td>A built-in command — see <a href="#commands">Commands</a>.</td></tr>
+      <tr><td><kbd>\</kbd> at line end, or <kbd>Option</kbd>+<kbd>Enter</kbd></td><td>New line, for longer messages.</td></tr>
+      <tr><td><kbd>↑</kbd> <kbd>↓</kbd> · <kbd>Tab</kbd></td><td>Previous messages · complete <code class="inline">/commands</code> and <code class="inline">@files</code>.</td></tr>
+      <tr><td><kbd>Esc</kbd> or <kbd>Ctrl</kbd>+<kbd>C</kbd></td><td>Stop the current answer (sAI keeps running).</td></tr>
+      <tr><td><code class="inline">exit</code></td><td>Leave sAI.</td></tr>
+    </table>
+    <p>You can say <b>"don't edit anything"</b> or <b>"just explain"</b> and sAI will only investigate and report.</p>
+  </section>
+
+  <section id="agents">
+    <h2>The agents</h2>
+    <p>You don't need to pick one — sAI routes each request automatically. Big tasks go to several agents in turn
+      (for example Planner → Coder → Reviewer). <code class="inline">/agents</code> lists them.</p>
+    <table>
+      <tr><th>Agent</th><th>Good for</th></tr>
+      <tr><td>Planner</td><td>Breaking multi-step work into an ordered plan. Doesn't write code.</td></tr>
+      <tr><td>Architect</td><td>Designing systems, APIs, data models and UI before building.</td></tr>
+      <tr><td>Coder</td><td>Building and changing code — features, APIs, databases, data pipelines.</td></tr>
+      <tr><td>Debugger</td><td>Finding why something fails, reproducing bugs, writing and running tests.</td></tr>
+      <tr><td>Reviewer</td><td>Read-only code review and security audit.</td></tr>
+      <tr><td>Researcher</td><td>Answers from your codebase and the live web, exact calculations.</td></tr>
+      <tr><td>DevOps</td><td>CI/CD, Docker, deployment, monitoring, git history.</td></tr>
+      <tr><td>Writer</td><td>Docs, READMEs, specs, user stories, plain-language explanations.</td></tr>
+      <tr><td>GitHub</td><td>Issues, pull requests, reviews and Actions runs on github.com (needs extra setup; coming to the guide soon).</td></tr>
+    </table>
+  </section>
+
+  <section id="safety">
+    <h2>Approvals and safety</h2>
+    <ul>
+      <li><b>File changes</b> show a colored diff first and ask <code class="inline">Allow? [y/N/a]</code> — <b>y</b> yes,
+        <b>N</b> no, <b>a</b> yes to all edits for this session.</li>
+      <li><b>Risky commands</b> (deleting files, <code class="inline">sudo</code>, <code class="inline">git push</code>, installing
+        from the internet into a shell…) always ask first.</li>
+      <li><b>"No" means no.</b> When you decline, the agent stops and tells you what it was trying to do. It won't look for another way around.</li>
+      <li><b>Sandbox.</b> Commands that agents run can only write inside your project, can't read private files in your home folder
+        (like SSH keys or documents), and can only reach package registries and GitHub online. If a command needs more,
+        the agent asks you first. <code class="inline">/sandbox</code> shows the status; <code class="inline">/sandbox allow example.com</code> permits a website.</li>
+      <li><b>Undo.</b> <code class="inline">/undo</code> rolls back the file changes from the last request. Repeat it to go further back.</li>
+      <li><b>Fewer prompts.</b> <code class="inline">/permissions edits auto</code> applies edits without asking;
+        <code class="inline">/permissions allow pytest</code> lets a command run without asking. <code class="inline">/permissions</code> shows your rules.</li>
+    </ul>
+  </section>
+
+  <section id="commands">
+    <h2>Commands</h2>
+    <table>
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td><code class="inline">/help</code></td><td>All commands.</td></tr>
+      <tr><td><code class="inline">/init</code></td><td>sAI studies your project and writes <b>SAI.md</b> — instructions every agent follows. Edit it to add your own rules ("use tabs", "never touch /legacy").</td></tr>
+      <tr><td><code class="inline">/undo</code></td><td>Roll back the last request's file changes.</td></tr>
+      <tr><td><code class="inline">/agents</code></td><td>List the agents.</td></tr>
+      <tr><td><code class="inline">/council &lt;question&gt;</code></td><td>Several AI models answer at once, then one combines the best answer and says where they agreed. Great for tricky questions and design choices.</td></tr>
+      <tr><td><code class="inline">/cost</code></td><td>What this session cost, today's total, tokens used.</td></tr>
+      <tr><td><code class="inline">/budget 2.50</code> · <code class="inline">/budget off</code></td><td>A daily spending cap for paid models. Free models keep working after it.</td></tr>
+      <tr><td><code class="inline">/compact [focus]</code></td><td>Summarize the conversation to free up memory (also happens automatically).</td></tr>
+      <tr><td><code class="inline">/clear</code></td><td>Start a fresh conversation (the old one stays saved).</td></tr>
+      <tr><td><code class="inline">/resume</code></td><td>Continue an earlier conversation in this folder.</td></tr>
+      <tr><td><code class="inline">/permissions</code></td><td>View or change approval rules.</td></tr>
+      <tr><td><code class="inline">/sandbox</code></td><td>Sandbox status · <code class="inline">on</code>/<code class="inline">off</code> · <code class="inline">allow &lt;website&gt;</code>.</td></tr>
+      <tr><td><code class="inline">/login</code> · <code class="inline">/login groq</code></td><td>See, add or replace your API keys.</td></tr>
+      <tr><td><code class="inline">/mcp</code></td><td>Connected tool servers (advanced).</td></tr>
+    </table>
+    <p>From the shell: <code class="inline">sai --version</code>, <code class="inline">sai login</code>, <code class="inline">sai logout groq</code>,
+      <code class="inline">sai -c</code> (continue last conversation), <code class="inline">sai -r</code> (pick one).</p>
+  </section>
+
+  <section id="models">
+    <h2>Models and cost</h2>
+    <ul>
+      <li>sAI uses <b>free models first</b> — from OpenRouter, Groq, Google and NVIDIA, depending on the keys you added —
+        and switches to a paid model only when free ones are busy or fail. You'll see a short note when that happens.</li>
+      <li>Every answer ends with a <b>models</b> line saying exactly which models were used, and whether they were free.</li>
+      <li>OpenRouter limits free models to about 50 requests a day per account; adding free Groq, Gemini and NVIDIA keys
+        gives sAI more free capacity.</li>
+      <li>Paid usage is charged by the provider to your own key. Watch it with <code class="inline">/cost</code> and cap it with <code class="inline">/budget</code>.</li>
+      <li>Free model providers may log what you send them. Avoid free keys for code you can't share with third parties.</li>
+    </ul>
+  </section>
+
+  <section id="keys">
+    <h2>Your API keys</h2>
+    <ul>
+      <li>Stored <b>encrypted in your Mac's Keychain</b> — never in your project folder, so they can't end up in git.</li>
+      <li>Change them any time: <code class="inline">sai login</code> (or <code class="inline">/login</code> inside sAI). Each key is checked with its provider before it's saved.</li>
+      <li>Remove one: <code class="inline">sai logout groq</code>.</li>
+      <li>Environment variables such as <code class="inline">OPENROUTER_API_KEY</code> override saved keys — handy for scripts.</li>
+      <li>Never paste API keys into a request.</li>
+    </ul>
+  </section>
+
+  <section id="sessions">
+    <h2>Sessions and project memory</h2>
+    <ul>
+      <li>Conversations are saved per folder. Continue the last one with <code class="inline">sai -c</code>, or pick with <code class="inline">sai -r</code> / <code class="inline">/resume</code>.</li>
+      <li>Long conversations are summarized automatically so sAI keeps working; <code class="inline">/compact</code> does it on demand.</li>
+      <li><b>SAI.md</b> in your project holds standing instructions. Create it with <code class="inline">/init</code> and edit it freely.</li>
+    </ul>
+  </section>
+
+  <section id="custom">
+    <h2>Your own commands</h2>
+    <p>Save prompts you use often as Markdown files: in <code class="inline">.sai/commands/</code> inside a project, or
+      <code class="inline">~/.sai/commands/</code> for all projects. A file <code class="inline">review.md</code> becomes
+      <code class="inline">/review</code>. Write <code class="inline">$ARGUMENTS</code> where the text after the command should go:</p>
+<pre class="sample"># .sai/commands/explain.md
+Explain $ARGUMENTS to a new team member: what it does, how it fits in, and what to watch out for.</pre>
+    <p>Then: <code class="inline">/explain app/auth.py</code></p>
+  </section>
+
+  <section id="scripts">
+    <h2>Using sAI from scripts</h2>
+    <p>Run one request without the interactive screen — the answer goes to the output, progress to the error stream:</p>
+<pre class="sample">sai -p "summarize what this repo does"
+cat error.log | sai -p "why is this failing?"
+sai -p "add docstrings to utils.py" --accept-edits
+sai -p "list the TODOs" --output-format json</pre>
+    <p>Nobody is there to approve, so commands that need approval are declined and reported.
+      <code class="inline">--accept-edits</code> allows file edits.</p>
+  </section>
+
+  <section id="tips">
+    <h2>Tips for great results</h2>
+    <ul>
+      <li><b>Be specific.</b> "Fix the date parsing in reports/export.py so it accepts 2026-10-04" beats "fix the bug".</li>
+      <li><b>Point at files</b> with <code class="inline">@file</code> when you know where the problem is.</li>
+      <li><b>Paste the error.</b> A stack trace or log line saves the agent a lot of searching.</li>
+      <li><b>Say the limits.</b> "Only change the tests", "don't add dependencies", "just explain".</li>
+      <li><b>Run <code class="inline">/init</code> once per project</b> so every agent knows its conventions.</li>
+      <li><b>Use <code class="inline">/council</code></b> for questions where you want a second opinion.</li>
+      <li><b>Commit often</b> — and use <code class="inline">/undo</code> if a change isn't what you wanted.</li>
+    </ul>
+  </section>
+
+  <section id="trouble">
+    <h2>Troubleshooting</h2>
+    <table>
+      <tr><th>You see</th><th>What to do</th></tr>
+      <tr><td>No sAI license found</td><td>Run <code class="inline">python3 -m sai_guard activate</code> and paste your approval email.</td></tr>
+      <tr><td>This sAI license is for a different computer</td><td>Licenses work on one computer. New laptop or reinstalled system? <a href="index.html#access">Request again</a> with the new laptop code and mention it.</td></tr>
+      <tr><td>This sAI license expired</td><td>Request a renewal with the access form.</td></tr>
+      <tr><td>This sAI license isn't valid</td><td>The license was changed. Paste it again exactly as it came in the email.</td></tr>
+      <tr><td>This sAI build runs on Python 3.14</td><td>Install Python 3.14 and reinstall sAI with it.</td></tr>
+      <tr><td>sAI has no OpenRouter API key</td><td>Run <code class="inline">sai login</code>.</td></tr>
+      <tr><td>free model busy → using …</td><td>Normal: a free model was busy, so sAI switched to another. Nothing to do.</td></tr>
+      <tr><td>Daily budget reached</td><td>Raise it with <code class="inline">/budget 5</code>, or wait until tomorrow. Free models still work.</td></tr>
+      <tr><td>[sAI sandbox: …] in a command's output</td><td>The sandbox blocked something. The agent will ask before running it outside the sandbox — or allow a website with <code class="inline">/sandbox allow &lt;site&gt;</code>.</td></tr>
+      <tr><td>supports macOS only for now</td><td>You're on Windows or Linux, which aren't supported in this version.</td></tr>
+    </table>
+    <p>Still stuck? Use the <a href="index.html#access">form</a> and describe the problem in the last box.</p>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-in">
+    <span>sAI <span class="ver">0.1.0</span> for macOS · Copyright © 2026 Sai Ganesh Ongolu. All rights reserved.</span>
+    <span><a href="guide.html">Guide</a> · <a href="license.html">License</a></span>
+  </div>
+</footer>
+</body>
+</html>

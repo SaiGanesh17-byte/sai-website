@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>sAI — AI coding agents in your terminal</title>
+<meta name="description" content="sAI is a team of AI coding agents for your terminal. Request access for your laptop.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="bar">
+  <div class="bar-in">
+    <a class="brand" href="#top">sAI</a>
+    <nav><a href="#features">Features</a><a href="#how">How it works</a><a href="guide.html">Guide</a><a href="#faq">FAQ</a>
+      <a class="pill" href="#access">Request access</a></nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <p class="kicker">Version <span class="ver">0.1.0</span> · Preview · for macOS</p>
+    <h1>sAI</h1>
+    <p class="tagline">A whole team of AI engineers.<br>Right in your terminal.</p>
+    <div class="links"><a class="pill big" href="#access">Request access</a><a class="more" href="guide.html">Read the guide ›</a></div>
+    <div class="device">
+      <div class="device-bar"><i></i><i></i><i></i><span>~/my-project — sai</span></div>
+<pre><span class="p">❯</span> fix the failing test in calc.py
+  <span class="d">⎿  jev → Debugger</span>
+<span class="t">⏺</span> Bash(pytest -q)            <span class="d">⎿  1 failed, 4 passed</span>
+<span class="t">⏺</span> Read(calc.py)            <span class="d">⎿  Read 12 lines</span>
+<span class="t">⏺</span> Update(calc.py)          <span class="d">⎿  +1 −1 · Allow? [y/N] y</span>
+<span class="t">⏺</span> Debugger
+  add() subtracted instead of adding. Fixed — all 5 tests pass.
+  <span class="d">models: Debugger → nemotron-3-super (free) ×3</span></pre>
+    </div>
+  </section>
+
+  <section id="features" class="band light">
+    <h2>Smart. Safe. Mostly free.</h2>
+    <p class="sub">Everything you'd want from an AI pair programmer — and a few things you wouldn't expect.</p>
+    <div class="tiles">
+      <article class="tile"><span class="num">8</span><h3>Specialist agents.</h3><p>Coder, Debugger, Reviewer, Researcher, Planner and more. A router picks the right one for every request.</p></article>
+      <article class="tile"><span class="num">$0</span><h3>Free models first.</h3><p>Free tiers from OpenRouter, Groq, Google and NVIDIA come first. Paid models only step in when needed.</p></article>
+      <article class="tile"><span class="num">✓</span><h3>You approve every edit.</h3><p>See the exact change before it happens. Commands run in a sandbox that can't touch your secrets.</p></article>
+      <article class="tile"><span class="num">🔒</span><h3>Your keys stay yours.</h3><p>Bring your own API keys. They're kept encrypted in your computer's keychain — never in your code.</p></article>
+    </div>
+  </section>
+
+  <section id="how" class="band">
+    <h2>Up and running in minutes.</h2>
+    <p class="sub">Your license is made for your laptop — and only your laptop.</p>
+    <ol class="steps">
+      <li><span>1</span><div><h3>Download and install</h3><p>For <b>macOS</b> with <b>Python 3.14</b>. The package is locked — it runs only once your license is activated.</p>
+        <p><a class="pill" href="downloads/sai-0.1.0-py3-none-any.whl" download>Download sAI <span class="ver">0.1.0</span> for macOS</a></p>
+        <code>python3 -m pip install sai-0.1.0-py3-none-any.whl</code></div></li>
+      <li><span>2</span><div><h3>Get your laptop code</h3><p>Run this in Terminal and copy the 64-character code it prints. It identifies this computer only — nothing personal.</p><code>python3 -m sai_guard machine-id</code></div></li>
+      <li><span>3</span><div><h3>Request access</h3><p>Paste that code into the form below. Every request is reviewed personally.</p></div></li>
+      <li><span>4</span><div><h3>Activate</h3><p>Once approved, run this and paste the license from your email.</p><code>python3 -m sai_guard activate</code></div></li>
+      <li><span>5</span><div><h3>Start building</h3><p>Type <b>sai</b> in any project folder. The first launch asks for your model API keys.</p></div></li>
+    </ol>
+  </section>
+
+  <section id="access" class="band light">
+    <h2>Request access.</h2>
+    <p class="sub">Install sAI first (step 1), then send your laptop code. You'll hear back by email.</p>
+    <!-- FormSubmit emails each request to the owner. FORM_ENDPOINT and SITE_URL are filled in by publish.sh. -->
+    <form class="form" action="https://formsubmit.co/saiganeshongole17@gmail.com" method="POST">
+      <input type="hidden" name="_subject" value="New sAI access request">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_next" value="https://saiganesh17-byte.github.io/sai-website/thanks.html">
+      <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <label>Name<input name="name" required maxlength="80" autocomplete="name"></label>
+      <label>Email<input name="email" type="email" required maxlength="120" autocomplete="email"></label>
+      <label>Laptop code<input name="machine_code" required pattern="[0-9a-f]{64}" title="64 characters, 0–9 and a–f"
+             placeholder="from: python3 -m sai_guard machine-id" autocomplete="off" spellcheck="false"></label>
+      <label>What will you build with sAI? <em>Optional</em><textarea name="use_case" rows="3" maxlength="600"></textarea></label>
+      <label class="check"><input type="checkbox" name="accepts_license" value="yes" required>
+        <span>I agree to the <a href="license.html">sAI license</a> — one computer, no copying, sharing or reverse engineering.</span></label>
+      <button class="pill big" type="submit">Send request</button>
+    </form>
+  </section>
+
+  <section id="faq" class="band">
+    <h2>Questions? Answers.</h2>
+    <div class="faq">
+      <details><summary>Does it work on Windows or Linux?</summary><p>Not yet — sAI <span class="ver">0.1.0</span> supports macOS only. Linux support is close; Windows will follow. Requests from other systems will be kept for when they're supported.</p></details>
+      <details><summary>Which version is this?</summary><p>sAI <span class="ver">0.1.0</span>, an early preview. Run <b>sai --version</b> to see the version you have.</p></details>
+      <details><summary>Can I use it on two computers?</summary><p>Each license works on the computer whose code you sent. For another computer, just request a second license.</p></details>
+      <details><summary>I got a new laptop or reinstalled my system.</summary><p>Your laptop code changes. Send a new request with the new code and mention it — we'll replace your license.</p></details>
+      <details><summary>Does it cost anything?</summary><p>Access is free during the preview. Model usage is billed by the providers whose keys you use — with free-tier keys, most work costs nothing.</p></details>
+      <details><summary>Is my code sent anywhere?</summary><p>Only to the AI model providers whose keys you configure, as part of each request. sAI has no server of its own.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-in">
+    <span>sAI <span class="ver">0.1.0</span> for macOS · Copyright © 2026 Sai Ganesh Ongolu. All rights reserved.</span>
+    <span><a href="guide.html">Guide</a> · <a href="license.html">License</a></span>
+  </div>
+</footer>
+</body>
+</html>

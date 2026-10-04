@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SDK for Developers — sAI</title>
+<meta name="description" content="Run sAI's AI coding agents inside your own Python program, with your own model.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="bar">
+  <div class="bar-in">
+    <a class="brand" href="index.html">sAI</a>
+    <nav><a href="index.html#features">Features</a><a href="guide.html">Guide</a><a href="developers.html">Developers</a>
+      <a href="index.html#faq">FAQ</a><a class="pill" href="index.html#access">Request access</a></nav>
+  </div>
+</header>
+
+<main class="doc">
+  <header class="doc-head">
+    <p class="kicker">sAI SDK · version <span class="ver">0.2.0</span> · macOS</p>
+    <h1>sAI's agents.<br>Inside your app.</h1>
+    <p class="sub">Bring your own model. Get a whole team of coding agents — with tools, approvals and a sandbox — in a few lines of Python.</p>
+    <nav class="toc">
+      <a href="#quick">Quick start</a><a href="#models">Your model</a><a href="#agent">Agent</a><a href="#events">Events</a>
+      <a href="#approvals">Approvals</a><a href="#tools">Your tools</a><a href="#limits">Good to know</a>
+    </nav>
+  </header>
+
+  <section id="quick">
+    <h2>Quick start</h2>
+    <p>The SDK comes with sAI — <a href="guide.html#install">install and activate</a> it as usual, then:</p>
+<pre class="sample">from sai_sdk import Agent, LLM
+
+agent = Agent(LLM.openai("gpt-4o-mini", api_key="sk-..."),
+              folder="~/my-project", allow_edits=True)
+
+for event in agent.run("fix the failing test"):
+    print(event)          # every step as it happens; the last one is the Result
+
+result = agent.ask("what does utils.py do?")   # or just the final answer
+print(result.answer)</pre>
+  </section>
+
+  <section id="models">
+    <h2>Your model</h2>
+    <p>Use any model with an OpenAI-compatible API. Agents need <b>tool calling</b> to read files, edit and run
+      commands; without it they can still answer questions.</p>
+<pre class="sample">LLM("gpt-4o-mini", api_key=...)                       # OpenAI
+LLM("deepseek-chat", base_url="https://api.deepseek.com/v1", api_key=...)
+LLM.openrouter("qwen/qwen3-coder", api_key=...)
+LLM.groq("openai/gpt-oss-120b", api_key=...)          # free tier
+LLM.gemini("gemini-3.5-flash", api_key=...)           # free tier
+LLM.ollama("qwen2.5-coder:14b")                       # on your computer, no key
+LLM.custom(my_function)                               # anything else</pre>
+    <ul>
+      <li>Your key is used for calls only and never stored.</li>
+      <li>Rate limits and temporary errors are retried automatically, waiting as long as the provider asks.</li>
+      <li><code class="inline">LLM.custom(fn)</code>: <code class="inline">fn(messages, tools)</code> receives OpenAI-format messages and
+        returns a string, or <code class="inline">{"content": ..., "tool_calls": [...]}</code>.</li>
+      <li>Smaller models pick agents less reliably — pass <code class="inline">agent="Coder"</code> to choose one yourself.</li>
+    </ul>
+  </section>
+
+  <section id="agent">
+    <h2>Agent</h2>
+    <table>
+      <tr><th>Option</th><th>What it does</th></tr>
+      <tr><td><code class="inline">llm</code></td><td>Your model (required).</td></tr>
+      <tr><td><code class="inline">folder</code></td><td>The project folder. Agents can't reach outside it.</td></tr>
+      <tr><td><code class="inline">tools</code></td><td>Your own tools — see <a href="#tools">Your tools</a>.</td></tr>
+      <tr><td><code class="inline">approve</code></td><td>Your function that allows or refuses each file edit and risky command.</td></tr>
+      <tr><td><code class="inline">allow_edits</code></td><td>Without <code class="inline">approve</code>: apply edits automatically. Risky commands are refused.</td></tr>
+      <tr><td><code class="inline">agent</code></td><td>Always use one agent: Coder, Debugger, Researcher, Reviewer, Writer, Planner, Architect, DevOps.</td></tr>
+      <tr><td><code class="inline">max_steps</code></td><td>Tool steps per request (default 12).</td></tr>
+      <tr><td><code class="inline">sandbox</code></td><td>Run agent commands in the macOS sandbox (default on).</td></tr>
+    </table>
+    <p><code class="inline">run(prompt)</code> streams events · <code class="inline">ask(prompt)</code> returns the Result ·
+      <code class="inline">reset()</code> starts a new conversation (otherwise it continues) · <code class="inline">stop()</code> stops the current run.</p>
+  </section>
+
+  <section id="events">
+    <h2>Events</h2>
+    <table>
+      <tr><th>Event</th><th>Means</th></tr>
+      <tr><td><code class="inline">Notice</code></td><td>Which agent took the request.</td></tr>
+      <tr><td><code class="inline">Text</code></td><td>Reply text as it's being written.</td></tr>
+      <tr><td><code class="inline">ToolCall</code></td><td>An agent is using a tool, with its arguments.</td></tr>
+      <tr><td><code class="inline">ToolResult</code></td><td>What the tool returned, and whether it worked.</td></tr>
+      <tr><td><code class="inline">AgentMessage</code></td><td>A complete message; <code class="inline">final</code> marks the answer.</td></tr>
+      <tr><td><code class="inline">Result</code></td><td>Always last: <code class="inline">answer</code>, <code class="inline">agent</code>, <code class="inline">stop_reason</code>,
+        <code class="inline">declined</code>, <code class="inline">models</code>, tokens, <code class="inline">error</code>.</td></tr>
+    </table>
+    <p>Model and tool failures never crash your program — they arrive as a Result with <code class="inline">stop_reason="error"</code>.</p>
+  </section>
+
+  <section id="approvals">
+    <h2>Approvals</h2>
+<pre class="sample">def approve(request):
+    print(request.kind, request.description)   # "edit", "command", ...
+    print(request.diff)                        # for edits: exactly what changes
+    return ask_my_user()                       # True to allow
+
+agent = Agent(llm, folder="~/my-project", approve=approve)</pre>
+    <p>A refused action isn't retried or worked around — the agent explains what it wanted to do, and
+      <code class="inline">result.declined</code> lists it.</p>
+  </section>
+
+  <section id="tools">
+    <h2>Your tools</h2>
+<pre class="sample">from sai_sdk import tool
+
+@tool
+def ticket(ticket_id: str) -> str:
+    "Look up a bug ticket by its id."       # what the model sees
+    return my_tracker.get(ticket_id)
+
+agent = Agent(llm, folder="~/my-project", tools=[ticket])
+agent.ask("Fix the bug described in ticket BUG-142.")</pre>
+    <p>Typed parameters become the tool's arguments; those without defaults are required. Return text.
+      If your function raises, the agent is told and can react.</p>
+  </section>
+
+  <section id="limits">
+    <h2>Good to know</h2>
+    <ul>
+      <li><b>One run at a time</b> per Python process. Run agents one after another, or in separate processes.</li>
+      <li><b>macOS and Python 3.14</b>, like the rest of sAI <span class="ver">0.2.0</span>.</li>
+      <li>The SDK needs your activated sAI license, on the computer it was issued for.</li>
+      <li>Your code and prompts go only to the model provider you choose.</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-in">
+    <span>sAI <span class="ver">0.2.0</span> for macOS · Copyright © 2026 Sai Ganesh Ongolu. All rights reserved.</span>
+    <span><a href="guide.html">Guide</a> · <a href="developers.html">Developers</a> · <a href="license.html">License</a></span>
+  </div>
+</footer>
+</body>
+</html>
